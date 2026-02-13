@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>RUN KEYBOARD</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="img/WhatsApp Image 2026-02-13 at 01.58.34.jpeg" type="image/x-icon">
+    <style>
+        :root {
+            --primary: #00d2ff;
+            --text-color: #ff007f;
+            --bg: #050508;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: white;
+            font-family: 'Press Start 2P', cursive;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-image: linear-gradient(to bottom, rgba(5, 5, 8, 0.8), rgba(5, 5, 8, 1)), radial-gradient(circle, #fff 1px, transparent 1px);
+            background-size: 100% 100%, 50px 50px;
+        }
+
+        @keyframes shake {
+            0% {
+                transform: translate(3px, 3px);
+            }
+
+            25% {
+                transform: translate(-3px, -3px);
+            }
+
+            50% {
+                transform: translate(3px, -3px);
+            }
+
+            75% {
+                transform: translate(-3px, 3px);
+            }
+
+            100% {
+                transform: translate(0, 0);
+            }
+        }
+
+        .shaking {
+            animation: shake 0.2s ease-in-out;
+        }
+
+        body::before {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            width: 200%;
+            height: 50%;
+            background-image: linear-gradient(var(--primary) 1px, transparent 1px), linear-gradient(90deg, var(--primary) 1px, transparent 1px);
+            background-size: 40px 40px;
+            transform: perspective(300px) rotateX(60deg) translateX(-25%);
+            mask-image: linear-gradient(to top, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0));
+            opacity: 0.3;
+            z-index: -1;
+            animation: moveGrid 2s linear infinite;
+        }
+
+        @keyframes moveGrid {
+            from {
+                background-position: 0 0;
+            }
+
+            to {
+                background-position: 0 40px;
+            }
+        }
+
+        .screen {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .card {
+            background: rgba(17, 17, 17, 0.95);
+            padding: 25px;
+            border: 4px solid var(--primary);
+            box-shadow: 0 0 20px var(--primary);
+            text-align: center;
+            min-width: 400px;
+            z-index: 10;
+        }
+
+        h1 {
+            font-size: 24px;
+            text-shadow: 4px 4px var(--text-color);
+            margin-bottom: 20px;
+        }
+
+        .settings-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 15px 0;
+            font-size: 8px;
+        }
+
+        .setting-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        button {
+            background: var(--primary);
+            border: none;
+            padding: 12px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 10px;
+            cursor: pointer;
+            margin-top: 10px;
+            width: 100%;
+            color: #000;
+            box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.5);
+        }
+
+        input[type="color"] {
+            border: 2px solid #fff;
+            width: 35px;
+            height: 35px;
+            cursor: pointer;
+            background: none;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            cursor: pointer;
+        }
+
+        select,
+        input[type="text"] {
+            background: #000;
+            color: #fff;
+            border: 2px solid var(--primary);
+            padding: 8px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 8px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .rank-box {
+            background: #000;
+            border: 1px solid #333;
+            padding: 10px;
+            margin-bottom: 15px;
+            font-size: 8px;
+            color: #ffd700;
+        }
+
+        .rank-line {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+        }
+
+        #game-area {
+            width: 100%;
+            max-width: 800px;
+            height: 100%;
+            position: relative;
+            border-left: 2px solid var(--primary);
+            border-right: 2px solid var(--primary);
+        }
+
+        .enemy {
+            position: absolute;
+            font-size: 14px;
+            color: var(--text-color);
+            text-shadow: 2px 2px #000;
+            font-weight: bold;
+        }
+
+        .done {
+            color: #444;
+        }
+
+        .next {
+            color: #fff;
+            border-bottom: 3px solid var(--primary);
+            text-shadow: 0 0 10px var(--primary);
+        }
+
+        #hud {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            background: rgba(0, 0, 0, 0.9);
+            border-bottom: 3px solid var(--primary);
+            font-size: 9px;
+            z-index: 100;
+        }
+
+        .particle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            pointer-events: none;
+            z-index: 10;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="screen-menu" class="screen">
+        <h1>RUN KEYBOARD</h1>
+        <div class="card">
+            <div id="rank-ui" class="rank-box">TOP RECORDS</div>
+            <div class="settings-grid">
+                <div class="setting-item"><span>NEON</span><input type="color" id="color-primary" value="#00d2ff"></div>
+                <div class="setting-item"><span>LETRAS</span><input type="color" id="color-text" value="#ff007f"></div>
+                <div class="setting-item" style="grid-column: span 2;"><span>VOLUME: <span
+                            id="vol-val">50</span>%</span><input type="range" id="vol-slider" min="0" max="100"
+                        value="50"></div>
+                <div class="setting-item"><span>LÍNGUA</span><select id="select-lang">
+                        <option value="pt">PT</option>
+                        <option value="en">EN</option>
+                    </select></div>
+                <div class="setting-item"><span>NÍVEL</span><select id="select-diff">
+                        <option value="0.5">CALMO</option>
+                        <option value="1.0">FAST</option>
+                        <option value="1.8">INSANE</option>
+                    </select></div>
+            </div>
+            <button id="start-button">START MISSION</button>
+        </div>
+    </div>
+    <div id="screen-over" class="screen hidden">
+        <h1>GAME OVER</h1>
+        <div class="card">
+            <h2 id="final-score">0 PTS</h2><input type="text" id="player-name" placeholder="NOME" maxlength="10"><button
+                id="save-button">SALVAR</button><button style="background: #333; color: #fff;"
+                onclick="location.reload()">MENU</button>
+        </div>
+    </div>
+    <div id="screen-game" class="screen hidden">
+        <div id="hud"><span>SCORE: <b id="ui-score">0</b></span><span>TOP: <b id="ui-best">0</b></span></div>
+        <div id="game-area"></div>
+    </div>
+
+    <script>
+        const AudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const Music = {
+            isPlaying: false, sequence: [110, 110, 130, 110, 164, 110, 146, 123], step: 0, interval: 200, timeout: null,
+            playStep() {
+                if (!this.isPlaying) return;
+                const master = document.getElementById('vol-slider').value / 100;
+                const score = Jogo.state.score;
+                const pitchMod = 1 + Math.floor(score / 50);
+                const freq = this.sequence[this.step] * (pitchMod > 4 ? 4 : pitchMod);
+                this.interval = Math.max(100, 200 - (score * 0.5));
+                const osc = AudioCtx.createOscillator(); const g = AudioCtx.createGain();
+                osc.type = 'sawtooth'; osc.frequency.setValueAtTime(freq, AudioCtx.currentTime);
+                g.gain.setValueAtTime(0.04 * master, AudioCtx.currentTime);
+                g.gain.exponentialRampToValueAtTime(0.001, AudioCtx.currentTime + (this.interval / 1000));
+                osc.connect(g); g.connect(AudioCtx.destination);
+                osc.start(); osc.stop(AudioCtx.currentTime + (this.interval / 1000));
+                this.step = (this.step + 1) % this.sequence.length;
+                this.timeout = setTimeout(() => this.playStep(), this.interval);
+            },
+            start() { if (!this.isPlaying) { this.isPlaying = true; this.step = 0; this.playStep(); } },
+            stop() { this.isPlaying = false; clearTimeout(this.timeout); }
+        };
+        const Sound = {
+            play(freq, type, dur, volMod) {
+                const master = document.getElementById('vol-slider').value / 100;
+                const osc = AudioCtx.createOscillator(); const g = AudioCtx.createGain();
+                osc.type = type; osc.frequency.setValueAtTime(freq, AudioCtx.currentTime);
+                g.gain.setValueAtTime(volMod * master, AudioCtx.currentTime);
+                g.gain.exponentialRampToValueAtTime(0.01, AudioCtx.currentTime + dur);
+                osc.connect(g); g.connect(AudioCtx.destination);
+                osc.start(); osc.stop(AudioCtx.currentTime + dur);
+            },
+            click() { this.play(800, 'sine', 0.1, 0.1); },
+            boom() { this.play(100, 'square', 0.3, 0.2); }
+        };
+        const Jogo = {
+            palavras: { pt: ["pixel", "laser", "neon", "codigo", "retro", "teclado", "vencer", "foguete", "digital", "fluxo", "nuvem", "rede", "logica"], en: ["pixel", "laser", "neon", "code", "retro", "keyboard", "winner", "rocket", "digital", "flow", "cloud", "network", "logic"] },
+            state: { playing: false, score: 0, speed: 0.5, enemies: [], target: null, lb: JSON.parse(localStorage.getItem('rk_final_lb')) || [] },
+            init() {
+                this.renderRank();
+                document.getElementById('color-primary').oninput = (e) => document.documentElement.style.setProperty('--primary', e.target.value);
+                document.getElementById('color-text').oninput = (e) => document.documentElement.style.setProperty('--text-color', e.target.value);
+                document.getElementById('vol-slider').oninput = (e) => document.getElementById('vol-val').innerText = e.target.value;
+                document.getElementById('start-button').onclick = () => { AudioCtx.resume(); this.start(); };
+                document.getElementById('save-button').onclick = () => this.save();
+                window.onkeydown = (e) => this.type(e);
+            },
+            renderRank() {
+                const ui = document.getElementById('rank-ui'); ui.innerHTML = 'TOP RECORDS<br>';
+                this.state.lb.slice(0, 3).forEach((s, i) => { ui.innerHTML += `<div class="rank-line"><span>${i + 1}.${s.name}</span><span>${s.score}</span></div>`; });
+                document.getElementById('ui-best').innerText = this.state.lb[0]?.score || 0;
+            },
+            applyShake() {
+                const area = document.getElementById('game-area'); area.classList.add('shaking');
+                setTimeout(() => area.classList.remove('shaking'), 200);
+            },
+            createExplosion(x, y) {
+                this.applyShake(); Sound.boom();
+                const color = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim();
+                for (let i = 0; i < 15; i++) {
+                    const p = document.createElement('div'); p.className = 'particle'; p.style.backgroundColor = color;
+                    p.style.left = x + 'px'; p.style.top = y + 'px'; document.getElementById('game-area').appendChild(p);
+                    const angle = Math.random() * Math.PI * 2; const velocity = 2 + Math.random() * 5;
+                    const vx = Math.cos(angle) * velocity; const vy = Math.sin(angle) * velocity;
+                    let life = 1.0; const move = setInterval(() => {
+                        life -= 0.05; p.style.left = (parseFloat(p.style.left) + vx) + 'px'; p.style.top = (parseFloat(p.style.top) + vy) + 'px'; p.style.opacity = life;
+                        if (life <= 0) { clearInterval(move); p.remove(); }
+                    }, 30);
+                }
+            },
+            start() {
+                this.state.lang = document.getElementById('select-lang').value; this.state.speed = parseFloat(document.getElementById('select-diff').value);
+                this.state.score = 0; this.state.enemies = []; this.state.playing = true;
+                document.getElementById('screen-menu').classList.add('hidden'); document.getElementById('screen-game').classList.remove('hidden');
+                document.getElementById('game-area').innerHTML = ''; Music.start(); this.spawn(); this.loop();
+            },
+            spawn() {
+                if (!this.state.playing) return;
+                const list = this.palavras[this.state.lang]; const text = list[Math.floor(Math.random() * list.length)].toUpperCase();
+                const div = document.createElement('div'); div.className = 'enemy'; div.innerText = text;
+                const obj = { el: div, word: text, index: 0, x: Math.random() * (document.getElementById('game-area').offsetWidth - 120) + 60, y: -50 };
+                document.getElementById('game-area').appendChild(div); this.state.enemies.push(obj);
+                setTimeout(() => this.spawn(), Math.max(500, 2000 - (this.state.score * 8)));
+            },
+            loop() {
+                if (!this.state.playing) return;
+                this.state.enemies.forEach(en => { en.y += this.state.speed; en.el.style.top = en.y + 'px'; en.el.style.left = en.x + 'px'; if (en.y > window.innerHeight - 100) this.over(); });
+                requestAnimationFrame(() => this.loop());
+            },
+            type(e) {
+                if (!this.state.playing) return; const char = e.key.toUpperCase();
+                if (!this.state.target) this.state.target = this.state.enemies.find(en => en.word[0] === char && en.y > 0);
+                if (this.state.target && this.state.target.word[this.state.target.index] === char) {
+                    Sound.click(); this.state.target.index++; const t = this.state.target;
+                    t.el.innerHTML = `<span class="done">${t.word.slice(0, t.index)}</span><span class="next">${t.word[t.index] || ""}</span>${t.word.slice(t.index + 1)}`;
+                    if (t.index === t.word.length) { this.createExplosion(t.x + 30, t.y + 10); t.el.remove(); this.state.enemies = this.state.enemies.filter(en => en !== t); this.state.target = null; this.state.score += 10; this.state.speed += 0.02; document.getElementById('ui-score').innerText = this.state.score; }
+                }
+            },
+            over() { this.state.playing = false; Music.stop(); document.getElementById('screen-game').classList.add('hidden'); document.getElementById('screen-over').classList.remove('hidden'); document.getElementById('final-score').innerText = this.state.score + " PONTOS"; },
+            save() { const name = document.getElementById('player-name').value || "ANON"; this.state.lb.push({ name, score: this.state.score }); this.state.lb.sort((a, b) => b.score - a.score); localStorage.setItem('rk_final_lb', JSON.stringify(this.state.lb.slice(0, 5))); location.reload(); }
+        };
+        window.onload = () => Jogo.init();
+    </script>
+</body>
+
+</html>
